@@ -16,7 +16,11 @@ body{
 
 
 header{
+  display: flex;
+  flex-direction: column;
   text-align: center;
+  align-items: center;
+  justify-content: center;
 }
 
 header>h1{
@@ -53,13 +57,18 @@ margin: 5px;
 
 .languages{
   display: flex;
-
   justify-content: center;
   max-width: 350px;
   flex-wrap: wrap;
   gap: 5px;
   margin-bottom: 36px;
 }
+
+section.languages >span{
+  border-radius: 3px;
+  padding: 4.5px
+}
+
 
 .current-word{
   display: flex;
@@ -80,9 +89,8 @@ section.current-word > span{
 
 }
 
-section.letters{
+section.keyboard{
   display: flex;
-  max-width: 350px;
   flex-wrap: wrap;
   justify-content: center;
   gap: 8px;
@@ -90,7 +98,7 @@ section.letters{
   margin-bottom: 20px;
 }
 
-section.letters > button {
+section.keyboard > button {
   background-color: #FCBA29;
   border-radius: 3px;
   border: 1px solid #D7D7D7;
@@ -98,6 +106,15 @@ section.letters > button {
   width: 35px;
   cursor: pointer;
 }
+
+section.keyboard > button.correct {
+  background-color: #10A95B;
+}
+
+section.keyboard >button.wrong{
+  background-color: #EC5D49;
+}
+
 .new-game{
   display: flex;
 justify-content: center;
@@ -105,7 +122,8 @@ justify-content: center;
 .new-game-button{
   padding: 10px 50px;
   white-space: nowrap;
-  background-color:rgb(107, 107, 248);
+  background-color:#11B5E5;
   border: 1px solid #D7D7D7;
   border-radius:5px; 
+  cursor:pointer
 }
