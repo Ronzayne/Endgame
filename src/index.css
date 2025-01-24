@@ -167,6 +167,7 @@ section.keyboard >button:disabled {
 .new-game{
   display: flex;
 justify-content: center;
+gap: 20px;
 }
 .new-game-button{
   padding: 10px 50px;
@@ -176,6 +177,8 @@ justify-content: center;
   border-radius:5px; 
   cursor:pointer
 }
+
+
 
 .sr-only {
   position: absolute;
