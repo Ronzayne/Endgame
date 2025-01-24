@@ -162,6 +162,7 @@ export default function AssemblyEndgame() {
 
       <section className="keyboard">{keyBordElements}</section>
       <div className="new-game">
+        <p className="guess-class">Remaining: {8 - wrongGuessCount}</p>
         {isGameOver ? (
           <button onClick={newGame} className="new-game-button">
             New Game
