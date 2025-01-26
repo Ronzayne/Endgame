@@ -1,12 +1,24 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { clsx } from "clsx";
 import { languages } from "../data/languages";
 import { getFarewellText, getRandomWord } from "../data/utils";
 import { useWindowSize } from "react-use";
 import Confetti from "react-confetti";
+
 export default function AssemblyEndgame() {
   const [currentWord, setCurrentWord] = useState(() => getRandomWord());
   const [guessedLetters, setGuessedLetters] = useState([]);
+  const [time, setTime] = useState(60);
+  const [isRunning, setIsRunning] = useState(false);
+
+  function startTimer() {
+    setIsRunning(true);
+  }
+
+  function resetTimer() {
+    setTime(60);
+    setIsRunning(false);
+  }
 
   function newGame() {
     setCurrentWord(getRandomWord);
@@ -21,9 +33,27 @@ export default function AssemblyEndgame() {
   const isGameWon = currentWord
     .split("")
     .every((letter) => guessedLetters.includes(letter));
-  const isGameLost = wrongGuessCount >= languages.length - 1;
+  const isGameLost = wrongGuessCount >= languages.length - 1 || time <= 0;
 
   const isGameOver = isGameWon || isGameLost;
+
+  useEffect(() => {
+    let timerInterval;
+    if (isGameOver) return;
+    if (isRunning && time > 0) {
+      timerInterval = setInterval(() => {
+        setTime((prevTime) => prevTime - 1);
+      }, 1000);
+    }
+    return () => clearInterval(timerInterval);
+  }, [isRunning, time, isGameOver]);
+
+  useEffect(() => {
+    if (time <= 0) {
+      setIsRunning(false);
+    }
+  }, [time]);
+
   // console.log(isGameOver);
   const isLastGuessedLetter = guessedLetters[guessedLetters.length - 1];
   const isLastGuessIncorrect =
@@ -84,7 +114,10 @@ export default function AssemblyEndgame() {
         disabled={isGameOver}
         aria-disabled={guessedLetters.includes(letters)}
         aria-label={`Letter ${letters}`}
-        onClick={() => getGuessedLetters(letters)}
+        onClick={() => {
+          getGuessedLetters(letters);
+          startTimer();
+        }}
       >
         {letters.toUpperCase()}
       </button>
@@ -96,6 +129,13 @@ export default function AssemblyEndgame() {
     lost: isGameLost,
     farewell: !isGameOver && isLastGuessIncorrect,
   });
+
+  const farewellMessage = useMemo(() => {
+    if (isLastGuessIncorrect) {
+      return getFarewellText(languages[wrongGuessCount - 1]?.name);
+    }
+    return null;
+  }, [isLastGuessIncorrect, wrongGuessCount]);
 
   const { width, height } = useWindowSize();
   return (
@@ -129,10 +169,8 @@ export default function AssemblyEndgame() {
             </>
           )
         ) : !isGameOver ? (
-          isLastGuessIncorrect ? (
-            <p className="farewell-message">
-              {getFarewellText(languages[wrongGuessCount - 1].name)}
-            </p>
+          isLastGuessIncorrect && farewellMessage ? (
+            <p className="farewell-message">{farewellMessage}</p>
           ) : null
         ) : null}
       </section>
@@ -164,10 +202,18 @@ export default function AssemblyEndgame() {
       <div className="new-game">
         <p className="guess-class">Remaining: {8 - wrongGuessCount}</p>
         {isGameOver ? (
-          <button onClick={newGame} className="new-game-button">
+          <button
+            onClick={() => {
+              newGame();
+              resetTimer();
+            }}
+            className="new-game-button"
+          >
             New Game
           </button>
         ) : null}
+
+        <p className="timer">Timer: {time}s</p>
       </div>
     </main>
   );
